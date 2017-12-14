@@ -1,0 +1,53 @@
+------------------------------------------------------------------------------
+ATLAS LaTeX class, style files and templates to typeset notes and papers
+See ChangeLog or SVN log for history of changes.
+
+Responsible: Ian Brock (Ian.Brock@cern.ch)
+------------------------------------------------------------------------------
+
+The following template main files exist:
+	atlas-document.tex		Generic ATLAS document
+	atlas-draft-cover.tex	Make a cover for an ATLAS draft
+	atlas-preprint-cover.tex	Make a cover for an ATLAS CERN preprint
+	atlas-auxmat.tex		A front page for auxiliary material
+See template/README for how to set up a new paper or note draft.
+
+The ATLAS document class (atlasdoc.cls) and style files can be found in 
+the latex directory. The following style files exist:
+	atlascover.sty			Make a cover (CONF note, CERN preprint, ATLAS draft)
+	atlascontribute.sty		List of contributors (and authors) for a document
+	atlaspackage.sty		Standard packages used in ATLAS documents
+	atlasphysics.sty		Useful definitions. This file simply inputs others.
+							Options can be used to specify which ones should be included.
+
+Documentation can be found in the doc directory.
+	atlas-paper.pdf			Guide to the content and style of ATLAS papers
+	atlas-latex.pdf			Guide to the use of the ATLAS document templates and styles
+	atlas-bibtex.pdf		Short guide to BibTeX in ATLAS
+	atlas-physics.pdf		Symbols defined in atlasphysics.sty
+	atlas-rounding.pdf		Guidelines for rounding
+
+More detailed information about the package can be found under:
+https://twiki.cern.ch/twiki/bin/view/AtlasProtected/PubComTemplates
+
+The general idea is that you create a separate directory tree for each document that
+you want to produce which contains the contents of this package.
+It is assumed that all style files are in a directory latex, which is a subdirectory of 
+the one in which the main document sits. The latex subdirectory can of course be a link
+to a central style directory.
+
+A users guide to the templates can be found in atlas-latex.pdf. You can produce
+yourself this document (and thus test that your LaTeX setup is working)
+by giving the commands:
+  cd doc/atlas-latex
+  make
+or
+  cd doc/atlas-latex
+  pdflatex atlas-latex
+  biber    atlas-latex
+  pdflatex atlas-latex
+  pdflatex atlas-latex
+
+Two other make targets are:
+  make clean				Cleans up intermediate files
+  make cleanall				Also cleans up output pdf file

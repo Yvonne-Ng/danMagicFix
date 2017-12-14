@@ -1,0 +1,143 @@
+##############################################
+#                                            #
+#  Config file for Bayesian                  #
+#                                            #
+##############################################
+
+#set all the parameters of your analysis
+#IMPORTANT: don't leave spaces after the parameters!
+
+	
+##########################################
+# input/output
+##########################################
+
+# This input to limit setting phase must be an output from the search phase
+# Value overwritten if use Run_SearchPhase.py
+dataFileName      results/Step1_SearchPhase/Step1_SearchPhase.root
+
+dataHist          basicData
+
+# Value overwritten if use Run_SearchPhase.py
+signalFileName    inputs/MC15a_20150623/dataLikeHistograms_Option9/dataLikeHists_v1/StatisticalHists/1fb/QStar%d_1fb.root
+
+# Value overwritten if use Run_SearchPhase.py
+nominalSignalHist mjj_QStar%d_1fb_Nominal
+
+# Value overwritten if use Run_SearchPhase.py
+outputFileName	   results/Step2_setLimitsOneMassPointMC.root
+
+# Put LogFiles in this folder
+# Value overwritten if use Run_SearchPhase.py
+plotDirectory	  . 
+
+# If you want to keep the BAT output plots with a distinguishable name, specify it here
+plotNameExtension QStar
+
+# Name of signal for retrievals etc
+signame		  QStar
+
+##########################################
+# general
+##########################################
+
+# Value overwritten if use Run_SearchPhase.py
+Ecm		  13000.0
+
+minXForFit	  1099
+
+nParameters       3
+
+##########################################
+# for limits
+##########################################
+nSigmas		  3.
+
+doExpected	  true
+
+# Lydia changed 10 to 100
+nPEForExpected	  100
+
+##########################################
+# Background
+##########################################
+
+doFitError	  true
+
+nFitsInBkgError	  100
+
+##########################################
+# Lumi
+##########################################
+
+doLumiError       true
+# 9% lumi error
+luminosityErr	  0.09
+
+##########################################
+# Function choice
+##########################################
+
+doFitFunctionChoiceError true
+
+nFitFSigmas       1
+
+alternateFunctionCode	4
+alternateNParameters	4
+altparameter1  0.000675172
+altparameter2  8.54705
+altparameter3  5.19074
+altparameter4   0
+
+##########################################
+# Beam energy systematic
+##########################################
+
+doBeam		 false
+
+BeamFile          ./inputs/BeamUncertainty/AbsoluteBEAMUncertaintiesForPlotting.root
+
+##########################################
+# JES
+##########################################
+
+doJES		  true
+
+##--------------------------------------##
+
+useMatrices       false
+
+nominalJES         #matrix_mjj_TotalUncertainty_05
+
+nComponents       1
+name1		  1
+
+##--------------------------------------##
+
+useTemplates      true
+
+nominalTemplateJES mjj_QStar%d_1fb_Nominal
+
+nComponentsTemp 3 
+nameTemp1         mjj_QStar%d_1fb_JET_GroupedNP_1
+nameTemp2         mjj_QStar%d_1fb_JET_GroupedNP_2
+nameTemp3         mjj_QStar%d_1fb_JET_GroupedNP_3
+
+
+##--------------------------------------##
+# nJES is number of extensions +1
+nJES		  13
+extension1        __3down
+extension2        __2down5
+extension3        __2down
+extension4        __1down5
+extension5        __1down
+extension6        __0down5
+extension7        __0up5
+extension8        __1up
+extension9        __1up5
+extension10       __2up
+extension11       __2up5
+extension12       __3up
+
+

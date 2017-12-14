@@ -1,0 +1,75 @@
+
+##############################################
+#                                            #
+#  Config file for Bayesian                  #
+#                                            #
+##############################################
+
+#set all the parameters of your analysis
+#IMPORTANT: don't leave spaces after the parameters!
+
+	
+##########################################
+# input/output
+##########################################
+
+# This contains the data spectrum which will be analysed
+# Value overwritten if use Run_SearchPhase.py
+inputFileName ./inputs/Data15_C_fGRL_JetCalibCorrection_20150721/dataHistograms.PeriodC.root
+
+# Value overwritten if use Run_SearchPhase.py
+dataHist Nominal/mjj_Data_PeriodC_0p072fb
+
+# Value overwritten if use Run_SearchPhase.py
+outputFileName ./results/Step1_SearchPhase/Data15_C_fGRL_JetCalibCorrection_20150721/Step1_SearchPhase_mjj_Data_PeriodC_0p072fb.root
+
+##########################################
+# general
+##########################################
+
+# Center-of-mass energy of the spectrum studied
+# Value overwritten if use Run_SearchPhase.py
+Ecm        13000.0 
+
+# Number of pseudoexperiments to run
+# Matches 8 TeV paper value
+nPseudoExp  1000
+
+permitWindow	false
+
+##########################################
+# fitting
+##########################################
+
+# To use min of data put -1 (Use 1099 so fit starts from bin above, i.e. from 1100 GeV)
+minXForFit       543
+
+# use default: maximum of data
+maxXForFit       1250  
+
+# 13 TeV 3 param fit function:
+# this will be nominal function for now.
+functionCode		12
+nParameters 		3
+
+# For Period D 80.4/pb
+parameter1   970
+parameter2   29.9
+parameter3   0.67
+
+# 13 TeV 4 param fit function:
+doAlternateFunction     false
+alternateFunctionCode	4
+alternateNParameters	4
+
+# For Period D 80.4/pb
+altparameter1   0.000586612
+altparameter2   10.1298
+altparameter3   5.38005 
+altparameter4   0.111133
+
+doPValWithSysts		false
+
+doPEOnData		false
+
+doSideBandFit		false

@@ -1,0 +1,43 @@
+10
+
+dir
+279587
+svn+ssh://svn.cern.ch/reps/atlasphys-exo/Physics/Exotic/JDM/DiJet/StatisticalAnalysis/Bayesian/trunk/plotting
+svn+ssh://svn.cern.ch/reps/atlasphys-exo
+
+
+
+2017-12-08T09:59:07.491872Z
+279422
+etolley
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+883ba7d9-fdd0-4202-9341-49aa55999ad8
+
+SensitivityStudy
+dir
+
+SearchPhase
+dir
+
+validateSWIFT
+dir
+
+PythonModules
+dir
+
+LimitSettingPhase
+dir
+

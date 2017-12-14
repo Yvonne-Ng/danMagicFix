@@ -1,0 +1,50 @@
+For full instructions about running and setting up code see note in doc folder of Bayesian package.
+
+Trunk location in SVN:
+
+------ TAGS --------
+
+-- Pre 00-00-03 is outdated 
+00-00-03 and before, old tags
+00-00-04 Old version of trunk from frozen svn atlasphys
+00-00-05 (Now using Base,2.0.26) New tag contains corresponding note in doc folder
+00-00-06 Backup tag before making changes
+00-00-07 Runs on period A4 data
+00-00-08 In addition runs on latest MC and can perform sensitivity studies using Run_SearchPhase.py
+00-00-09 Uses 13 template JES inputs not 3 
+00-00-10 Backup tag
+00-00-11 Testing tag
+00-00-12 EPS tag
+00-00-13 improved EPS tag: better instructions in note, submitting to longer queue so all mass points complete.
+00-00-14 Improved EPS Tag including all QBH mass points
+00-00-15 testing LHCP tag
+00-00-16 LHCP tag
+00-00-17 Caterina tag
+00-00-18 rough EOYE tag backup
+
+------ Order of running -----------
+
+SearchPhase.cxx
+setLimitsOneMassPoint.cxx
+LimitSettingPhase.cxx 
+doGaussianLimits.cxx   
+
+----- Making changes -----
+
+each time changes are made (to source or header files)
+
+  save file
+  rc compile
+
+----- Making TAGS -----
+
+Remember to:
+
+* Change scripts/setup-StatisticalAnalysis.sh to download TAG not TRUNK (Change back to TRUNK after making TAG and svn commit)
+* Change doc/Bayesian.tex to point to setup-StatisticalAnalysis.sh script in TAG not the one in TRUNK (Change back to TRUNK after making TAG and svn commit)
+* Add TAG and description to TAGS section above in this README file
+
+e.g. tag making command:
+
+svn cp svn+ssh://svn.cern.ch/reps/atlasphys-exo/Physics/Exotic/JDM/DiJet/StatisticalAnalysis/Bayesian/trunk/ svn+ssh://svn.cern.ch/reps/atlasphys-exo/Physics/Exotic/JDM/DiJet/StatisticalAnalysis/Bayesian/tags/Bayesian-00-00-07/  -m "Stable Tag without splits setup for Period A4 data"
+

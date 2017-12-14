@@ -1,0 +1,205 @@
+%-------------------------------------------------------------------------------
+% List of packages that can or should be used in ATLAS documents
+%
+% See ChangeLog or SVN log for history of changes.
+% Responsible: Ian Brock (ian.brock@cern.ch)
+%-------------------------------------------------------------------------------
+\def\APKG@PackageVersion{01-03-02}
+
+\ProvidesPackage{latex/atlaspackage}[2014/09/22 v.01-03-02 ATLAS LaTeX packages]
+\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+
+\typeout{ATLAS LaTeX packages v.\APKG@PackageVersion}
+
+% Use kvoptions package to set options
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{
+  family=APKG,
+  prefix=APKG@
+}
+\DeclareBoolOption[false]{minimal}
+\DeclareBoolOption[true]{default}
+\DeclareBoolOption[false]{full}
+\DeclareBoolOption[false]{biblatex}
+\DeclareBoolOption[true]{siunitx}
+\DeclareBoolOption[false]{subfigure}
+\DeclareBoolOption[true]{hyperref}
+\DeclareBoolOption[true]{lineno}
+\DeclareStringOption[2013]{texlive}
+\ProcessKeyvalOptions*
+
+\typeout{Value of texlive is \APKG@texlive}
+
+\newif\ifAPKG@less
+\newif\ifAPKG@standard
+\newif\ifAPKG@more
+\ifAPKG@minimal
+  \typeout{APKG minimal settings}
+  \APKG@lesstrue
+  \APKG@standardfalse
+  \APKG@morefalse
+\else
+  \ifAPKG@full
+    \typeout{APKG full settings}
+    \APKG@lesstrue
+    \APKG@standardtrue
+    \APKG@moretrue
+  \else
+    \typeout{APKG default settings}
+    \APKG@lesstrue
+    \APKG@standardtrue
+    \APKG@morefalse
+  \fi
+\fi
+
+%\ifAPKG@less%
+%  \typeout{Value of less is true}
+%\else
+%  \typeout{Value of less is false}
+%\fi
+%\ifAPKG@standard%
+%  \typeout{Value of standard is true}
+%\else
+%  \typeout{Value of standard is false}
+%\fi
+%\ifAPKG@more%
+%  \typeout{Value of more is true}
+%\else
+%  \typeout{Value of more is false}
+%\fi
+
+%\let\ifAPKG@minimum\iffalse
+%\let\ifAPKG@default\iftrue
+%\let\ifAPKG@full\iffalse
+%\DeclareOption{minimal}{\let\ifAPKG@minimum\iftrue \let\ifAPKG@default\iffalse}
+%\DeclareOption{default}{\let\ifAPKG@minimum\iftrue \let\ifAPKG@default\iftrue}
+%\DeclareOption{full}{\let\ifAPKG@minimum\iftrue \let\ifAPKG@default\iftrue \let\ifAPKG@full\iftrue}
+%\let\ifAPKG@biblatex\iffalse
+%\DeclareOption{biblatex}{\let\ifAPKG@biblatex\iftrue}
+%\let\ifAPKG@subfigure\iffalse
+%\DeclareOption{subfigure}{\let\ifAPKG@subfigure\iftrue}
+%\let\if@tlnine\iffalse
+%\DeclareOption{tl2009}{\let\if@tlnine\iftrue}
+%\let\ifAPKG@hyperref\iftrue
+%\DeclareOption{nohyperref}{\let\ifAPKG@hyperref\iffalse}
+%
+%% Execute options
+%\ProcessOptions \relax
+
+%-------------------------------------------------------------------------------
+% Packages normally included by atlasdoc
+% Graphics
+\RequirePackage{graphicx}
+% Colour
+\RequirePackage{xcolor}
+% Document language control
+\RequirePackage{babel}
+% Add line numbers
+\ifAPKG@lineno%
+  \RequirePackage{lineno}
+\fi
+
+%-------------------------------------------------------------------------------
+% Minimal set of packages
+% Input encoding - allows ä, ö, ß etc. to be input directly
+\RequirePackage[utf8]{inputenc}
+% Encoding used for printout
+\RequirePackage[T1]{fontenc}
+% amsmath and txfonts define the same symbols - use the txfont version
+\RequirePackage{savesym}
+\savesymbol{iint}
+\savesymbol{iiint}
+\savesymbol{iiiint}
+\savesymbol{idotsint}
+% Extra and very useful maths macros from AMS
+\RequirePackage{amsmath}
+% The AMS \iint etc. is now defined as \AMSiint
+\restoresymbol{AMS}{iint}
+\restoresymbol{AMS}{iiint}
+\restoresymbol{AMS}{iiiint}
+\restoresymbol{AMS}{idotsint}
+% If you have an old lineno or do not have it, you can get it from the latex/other directory
+% \RequirePackage{latex/other/lineno}
+% Add command that can force all figures and tables (floats) to appear before a certain point
+\RequirePackage{placeins}
+
+\ifAPKG@standard%
+  % Extra options for footnotes
+  \RequirePackage[bottom]{footmisc}
+  % Nicer tables - use \toprule, \midrule, \bottomrule instead of \hline
+  \RequirePackage{booktabs}
+  % Several plots in a single figure
+  \ifAPKG@subfigure%
+    \RequirePackage{subfigure}
+  \else
+    \RequirePackage{subfig}
+  \fi
+  % subfigure option needed if subfig(ure) is also used
+  \RequirePackage[subfigure]{tocloft}
+  % Remove dots in table of contents
+  \renewcommand{\cftdot}{}
+  % Typset anything with units using this package - also has very useful table formatting 
+  % Declare a few options and standard units for siunitx that are otherwise missing
+  \ifAPKG@siunitx%
+    \def\siunitxone{2009}
+    \typeout{texlive is [\APKG@texlive] and siunitxone is [\siunitxone]}
+    \ifx\APKG@texlive\siunitxone
+      \RequirePackage[noload=addn]{siunitx}
+      \sisetup{seperr, repeatunits=false, alsoload=hep}
+      \sisetup{obeyall}
+%      \newunit\micron{\micro\metre}
+%      \newunit\mrad{\milli\radian}
+%      \newunit\nb{\nano\barn}
+%      \newunit\pb{\pico\barn}
+%      \newunit\fb{\femto\barn}
+%      \newunit\clight{\ensuremath{c}}
+    \else
+      \RequirePackage{siunitx}
+      \sisetup{separate-uncertainty, range-units=repeat, detect-display-math=true}
+%      detect-family = true, detect-display-math=true}
+      \sisetup{group-digits=integer, group-minimum-digits=4}
+      \DeclareSIUnit\micron{\micro\metre}
+      \DeclareSIUnit\mrad{\milli\radian}
+      \DeclareSIUnit\nb{\nano\barn}
+      \DeclareSIUnit\pb{\pico\barn}
+      \DeclareSIUnit\fb{\femto\barn}
+      \DeclareSIUnit\clight{\ensuremath{c}}
+    \fi
+  \fi
+\fi
+
+
+\ifAPKG@more%
+  % Tables that go over more than one page
+  \RequirePackage{xtab}
+  % \RequirePackage{longtable}
+  % \RequirePackage{supertable}
+  % Easy rotation of tables and figures
+  \RequirePackage{rotating}
+  % Quotes that are also language dependent - use \enquote{text} instead of ``text''
+  \RequirePackage[autostyle=true]{csquotes}
+  % Nicer fractions
+  \RequirePackage{xfrac}
+\fi
+
+% hyperref is usually included as late as possible
+\ifAPKG@hyperref%
+  \PassOptionsToPackage{hyphens}{url}
+  \usepackage{hyperref}
+  \hypersetup{pdftitle={ATLAS Document},pdfauthor={ATLAS Collaboration}} 
+  \hypersetup{colorlinks,breaklinks}
+  \hypersetup{linkcolor=blue,citecolor=blue,filecolor=black,urlcolor=blue}
+\fi
+
+% Use biblatex and biber for the bibliography
+% Style is numeric and comp option changes [1,2,3] into [1-3]
+% sorting=none    means the order is as they are cited
+% block=ragged    turns off block form, which avoids large spaces
+% firstinits=true means initial are used for first names
+% Some more tweaks should be made to the appearance, but they are not yet implemented
+\ifAPKG@biblatex%
+  \RequirePackage[backend=biber,
+    style=numeric-comp,sorting=none,block=ragged,firstinits=true]{biblatex}
+\fi
+
+\endinput
