@@ -21,15 +21,21 @@ signalFileNameTemplate = "inputs/TLA2016_MorphedSignalsFixed/J75_ystar03/dataLik
 Lumi = "3p57" # Luminosities to scale limits to in fb e.g. "10" or 0p1, should have corresponding search phase ran for this lumi 
 '''
 
-SearchPhaseresults = "results/data2017/runSWIFT2016_J75yStar03/SearchResultData_caseD_window13_doSwift.root"
-SearchPhaseconfig = "submitConfigs/runSWIFT2016_J75yStar03/Step1_SearchPhase_caseD_window13_doSwift.config"  
+SearchPhaseresults = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21SwiftNew/r21StatisticalAnalysis/source/results/data2017/DijetISRMC/SearchResultData_caseA_window13_doSwift.root"
+#SearchPhaseconfig = "submitConfigs/runSWIFT2016_J75yStar03/Step1_SearchPhase_caseD_window13_doSwift.config"  
+SearchPhaseconfig ="configurations/Step1_SearchPhase_Swift_dijetISR.config" 
 Lumi = "3p57"
-workTag = "runSWIFT2016_J75yStar03"
+workTag = "DijetISRMC"
 #ZPrime_masses = ["700","725","750","800","850","900","950","1000","1050","1100","1150","1200","1250","1300","1350","1400","1450","1500","1600","1700","1800"]
 ZPrime_masses = ["500","550","600","650","700","725","750","800","850"] 
 ZPrime_masses +=["900","950","1000","1050","1100","1150","1200","1250","1300","1350","1400","1450","1500","1600","1700","1800"]
 
-signalFileNameTemplate = "inputs/TLA2016_MorphedSignalsFixed/dataLikeHists_J7503_1GeVBins_fixed_morphed/dataLikeHistograms.%s.root"
+#ZPrime_masses = /lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21Rebuild/input/Chopped_Ph100_ZPrimemR1500_gSM0p3.root
+
+#signalFileNameTemplate = "inputs/TLA2016_MorphedSignalsFixed/dataLikeHists_J7503_1GeVBins_fixed_morphed/dataLikeHistograms.%s.root"
+
+signalFileNameTemplate = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21SwiftNew/r21StatisticalAnalysis/source/inputs/TLASearchAndLimitSetting/dataLikeHists_yStar03/dataLikeHistograms.%s.root"
+#signalFileNameTemplate = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21SwiftNew/r21StatisticalAnalysis/source/inputs/TLA2015_Signals/ZPrimemR%s.root"
 #ZPrime_masses = ["450"]
 #signalFileNameTemplate = "inputs/TLA2016_Signals/J75_ystar03/dataLikeHistograms.%s.root"
 
@@ -245,9 +251,9 @@ for Model in Signals.keys():
       signalName = "m{0}_g{1}".format(special_mass_str,Coupling.replace('p','.'))
       signalFileName = signalFileNameTemplate%signalName
 
-      if not os.path.exists(signalFileName):
-        print "File for Mass = ", Mass, " Coupling = ", Coupling, "not found"
-        continue
+ #     if not os.path.exists(signalFileName):
+ #       print "File for Mass = ", Mass, " Coupling = ", Coupling, "not found"
+ #       continue
 
     signalHist = "mjj_Scaled_%s_1fb_Nominal"%signalName
     outName = "ZPrime"+Coupling+"_mZ{0}"
@@ -325,3 +331,4 @@ for Model in Signals.keys():
           for p in range(nSplits):
             subprocess.call(command + " --seed " + str(seedOffset+p+1), shell=True)
         else: subprocess.call(command, shell=True)
+    print("command: ", command)

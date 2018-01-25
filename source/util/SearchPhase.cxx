@@ -22,6 +22,7 @@
 #include "TVector.h"
 #include "TStopwatch.h"
 
+using namespace std;
 int main (int argc,char **argv)
 {
 	cout << "test" << endl;
@@ -201,7 +202,15 @@ int main (int argc,char **argv)
 	if (inputHistDir.Length() == 0) {
 		basicInputHisto = (TH1D*) infile->Get(dataMjjHistoName);
 	} else {
-		basicInputHisto = (TH1D*) infile->GetDirectory(inputHistDir)->Get(dataMjjHistoName);
+		//basicInputHisto = (TH1D*) infile->GetDirectory(inputHistDir)->Get(dataMjjHistoName);
+        cout<<"grabing histogram: "<<inputHistDir+"/"+dataMjjHistoName;
+        if (infile->GetListOfKeys()->Contains(inputHistDir+"/"+dataMjjHistoName)){
+            cout<<"histogram exists"<<endl;
+        }
+        else{
+            cout<<"hitogram does not exist"<<endl;
+        }
+		basicInputHisto = (TH1D*) infile->Get(inputHistDir+"/"+dataMjjHistoName);
 	}
 
 	// If this is a scaled histogram, the errors need to be correct
@@ -535,6 +544,7 @@ int main (int argc,char **argv)
 	// Create bump hunter and set up specs.
 	MjjBumpHunter theBumpHunter;
 	theBumpHunter.SetMinBumpWidth(2);
+    theBumpHunter.SetMaxBumpWidth(5);
 	theBumpHunter.SetUseSidebands(false);
 
 	// Make pseudoexperimenter.
@@ -584,6 +594,14 @@ int main (int argc,char **argv)
     double mymass = basicInputHisto->GetBinLowEdge(firstBinInWindow)+mywidth;
   
     std::cout << "permitWindow is " << permitWindow << std::endl;
+
+    
+    cout<<"Yvonne"<<endl;
+    cout<<"error: "<<endl;
+
+    for (int i=1; i<basicInputHisto->GetNbinsX()+1; i++)
+        cout<<"bin "<< i<<"error: "<<basicInputHisto->GetBinError(i)<<endl;
+
   
 	while (initialpval < thresholdPVal_RemoveSignal && permitWindow
         && ((mywidth/mymass)<0.2)) {
@@ -696,6 +714,10 @@ int main (int argc,char **argv)
         
         }
 
+        cout<<"Yvonne"<<endl;
+        cout<<"error: "<<endl;
+        for (int i=1; basicInputHisto->GetNbinsX()+1; i++)
+            cout<<"bin "<< i<<"error: "<<basicInputHisto->GetBinContent(i)<<endl;
 		// Obtain estimate of BumpHunter p-value in region outside window to see if we need
 		// to keep going.
 		theBumpHunter.SetWindowToExclude(firstBinInWindow,lastBinInWindow);
@@ -919,6 +941,8 @@ int main (int argc,char **argv)
 	// Make histos for residual, diff, significance of diff of fit to data
 	MjjSignificanceTests theTestMaker;
 	TH1D residualHist = theTestMaker.GetResidual(theHistogram, backgroundFromFunc, firstBin, lastBin);
+    cout<<"YEdit: residualHist: "<<&residualHist<<endl;
+
 	TH1D relativeDiffHist = theTestMaker.GetRelativeDifference(theHistogram,backgroundFromFunc, firstBin, lastBin);
 	TH1D sigOfDiffHist = theTestMaker.GetSignificanceOfDifference(theHistogram,backgroundFromFunc, firstBin, lastBin);
   
@@ -978,6 +1002,7 @@ int main (int argc,char **argv)
     // Evaluate distribution of residual(s)
     std::vector<std::pair<TString,TH1D> > residuals;
     residuals.push_back(std::make_pair("residual",residualHist));
+    cout<<"YEdit: "<<&residualHist<<endl;
     if (doPValWithSysts) residuals.push_back(std::make_pair("residualWithSysts",residualHistWithSyst));
     std::vector<TH1D> distributionHists;
     std::vector<double> resultGausMeans;
@@ -989,13 +1014,20 @@ int main (int argc,char **argv)
       std::cout << "debug residuals " << i << std::endl;
       TString title = residuals.at(i).first;
       TH1D thisResHist = residuals.at(i).second;
+      cout<<"YEdit: "<<&thisResHist<<endl;
       TH1D residualResults(title+"_histOfVals",title+"_histOfVals",40,-10,+10);
-      for (int bin=firstBin; bin < lastBin; bin++)
+      cout<<"YEdit: bins:"<<lastBin<<endl;
+      for (int bin=firstBin; bin < lastBin; bin++){
         residualResults.Fill(thisResHist.GetBinContent(bin));
+        cout<<"YEdit: residualResults: bin"<<bin<<" content:"<<thisResHist.GetBinContent(bin)<<endl; }
       residualResults.Fit("gaus");
       residualResults.Print("all");
       TF1 fittedGauss(*(TF1*)residualResults.GetFunction("gaus"));
+      cout<<"YEdit: fittedGauss"<<&fittedGauss<<endl;
+
       fittedHists.push_back(&fittedGauss); //DEBUG EMMA
+      cout<<"fittedHists: "<<&fittedHists<<endl;
+      
       double gausmean = fittedGauss.GetParameter(1);
       double gauswidth = fittedGauss.GetParameter(2); 
       double histmean = residualResults.GetMean();
@@ -1051,6 +1083,8 @@ int main (int argc,char **argv)
 	theMjjFitFunction->SetCurrentParameterValues(fittedParameters);
 
 	TH1D basicData = theHistogram.GetHistogram();
+//Y Edit
+    cout<<"yEdit: "<<&basicData<<endl;
 	basicData.SetName("basicData");
 	basicData.Write();
 	TH1D normalizedData = theHistogram.GetNormalizedHistogram();
@@ -1209,7 +1243,7 @@ int main (int argc,char **argv)
       meansAndWidths.Write(name+"_gausMeanWidthHistMeanWidth");
       
       std::cout << "doing fittedhists" << std::endl;
-      fittedHists.at(i)->Write(name+"_fittedHist");//DEBUG EMMA
+      //fittedHists.at(i)->Write(name+"_fittedHist");//DEBUG EMMA
       std::cout << "done" << std::endl;
     }
 
@@ -1218,7 +1252,7 @@ int main (int argc,char **argv)
       string saveas = Form("evolution_parameter%i",i);
       swiftFitPars.at(i).Write(saveas.c_str());
     }
-    
+
     swiftBinsUsed.Write();
     
 	outfile->Close();

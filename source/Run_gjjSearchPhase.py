@@ -33,7 +33,7 @@ UserfileHistDict = {}
 
 doSearch =True# Set to True to run SearchPhase.cxx
 
-doPlotting =False # Set to True to run plotSearchPhase_gjj.py 
+doPlotting =False# Set to True to run plotSearchPhase_gjj.py 
 
 #folderextension = "dijetgamma_data_hist_20160727_15p45fb_4Par_169_1493"
 #
@@ -42,11 +42,11 @@ doPlotting =False # Set to True to run plotSearchPhase_gjj.py
 #UserfileHistDict[inputFileDir+"datalike.root"] = ["Zprime_mjj_var_DataLike_15p45fb"] # Dictionary given as example, key is inputFileDir+ file name 
 #
 #HistDir = "dijetgamma_g150_2j25_nomjj" 
-folderextension = "svnCodebkgndFit"
+folderextension = "swiftCodeTestingWithScale"
 
 #inputFileDir = "./inputs/"
 #inputFileDir="/lustre/SCRATCH/atlas/ywng/r21/r21Rebuild/input/"
-inputFileDir="/lustre/SCRATCH/atlas/ywng/r21/r21Rebuild/input/"
+inputFileDir="/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21Rebuild/input/"
 
 UserfileHistDict[inputFileDir+"MC.root"] = ["Zprime_mjj_var"] # Dictionary given as example, key is inputFileDir+ file name 
 #UserfileHistDict[inputFileDir+"dijetgamma_g85_2j65_2btag.root"] = ["background"] # Dictionary given as example, key is inputFileDir+ file name 
@@ -55,7 +55,7 @@ HistDir = "dijetgamma_g85_2j65"
 #HistDir = "" 
 
 # Turn to true if doing Spurious Signal test!
-useScaled = False # Set to true if using scaled histograms instead of Datalike histograms
+useScaled = True # Set to true if using scaled histograms instead of Datalike histograms
 
 #---------------------------
 # Analysis quantities 
@@ -63,7 +63,7 @@ Ecm = 13000.0 # Centre of mass energy in GeV
 
 ##---------------------------
 # Run controls  
-config = "./configurations/Step1_SearchPhaseNoSyst.config" # Path and name of config file
+config = "./configurations/Step1_SearchPhase.config" # Path and name of config file
 useBatch = False # Set to True to run SearchPhase.cxx on the batch, or set to False to run locally. runs code in batchdir
 atOx = False # Set to True to use Oxford batch rather than lxbatch for running!
 
@@ -125,7 +125,6 @@ for File, HistList in fileHistDict.iteritems():
               fout.write(line)
           else:
             fout.write(line)  
-            
       fin.close()
       fout.close()
      
@@ -165,7 +164,6 @@ for File, HistList in fileHistDict.iteritems():
         
           fbatchout.close()
           subprocess.call("qsub < %s/Step1_BatchScript_Template_%s.sh"%(Step1_ScriptArchive,Hist), shell=True)
-
         else:
           # Perform setLimitsOneMassPoint on batch
           print "Batch!!"
@@ -217,13 +215,20 @@ for File, HistList in fileHistDict.iteritems():
         lumi = lumi.strip("fb") 
         lumi = float(lumi)*1000
     #Yvonne hard set of the luminosity
-      lumi = 36.09
+      lumi = 35.09
       #if lumi == 0: raise SystemExit('\n***Zero lumi*** regex issue')
       # open modified plotSearchPhase_gjj.py (fout) for writing
       fout = open('plotting/SearchPhase/plotSearchPhase_gjj_%s.py'%Hist, 'w')
 
       # read in plotSearchPhase_gjj as fin and replace relevant fields
-      with open('./plotting/SearchPhase/plotSearchPhase_gjj.py', 'r') as fin:
+      #with open('./plotting/SearchPhase/plotSearchPhase_gjj.py', 'r') as fin:
+      if os.path.isfile('plotting/SearchPhase/plotSearchPhase_gjj_%s.py'%Hist) :
+          print "file exist"
+      else:
+          print "file doesn't exist"
+      #with open('./plotting/SearchPhase/plotSearchPhase_gjj_Zprime_mjj_var.py', 'r') as fin:
+      with open('./plotting/SearchPhase/plotSearchPhase.py', 'r') as fin:
+
         for line in fin:
           if (line.startswith("searchInputFile") or line.startswith("folderextension") or line.startswith("luminosity") or line.startswith("Ecm")): 
           
@@ -243,12 +248,9 @@ for File, HistList in fileHistDict.iteritems():
               fout.write(line)
           else:
             fout.write(line)  
-            
+        print "done"
       fin.close()
       fout.close()
-      
       subprocess.call("python plotting/SearchPhase/plotSearchPhase_gjj_%s.py -b"%Hist, shell=True)
+      print "done"
       os.remove("./plotting/SearchPhase/plotSearchPhase_gjj_%s.py"%Hist)
-
-
-

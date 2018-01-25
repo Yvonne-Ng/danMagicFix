@@ -36,7 +36,8 @@ def MakeHistoFromStats(statistics) :
   return statPlot
 
 # Get input (the rootfile name should match that specified in the SearchPhase.config file)
-searchInputFile = ROOT.TFile('./results/Step1_SearchPhase/Step1_SearchPhase.root')
+#searchInputFile = ROOT.TFile('./results/Step1_SearchPhase/Step1_SearchPhase.root')
+searchInputFile = ROOT.TFile('./results/data2017/DijetISRMC//SearchResultData_caseD_window13_doSwift.root')
 folderextension = './plotting/SearchPhase/plots/'
 
 # make plots folder i.e. make folder extension
@@ -44,12 +45,12 @@ if not os.path.exists(folderextension):
     os.makedirs(folderextension)
 
 # Define necessary quantities.
-luminosity = 1000
+luminosity = 35.5
 Ecm = 13
 
 # Get input
-doStatSearch = True
-doAlternate = True # You can use this if you included the alternate fit function in the search phase
+doStatSearch = False
+doAlternate = False # You can use this if you included the alternate fit function in the search phase
 
 # Initialize painter
 myPainter = Morisot()
@@ -66,7 +67,8 @@ myPainter.setLabelType(0) # Sets label type i.e. Internal, Work in progress etc.
 # 5 "Simulation"
 # 6 "Work in Progress"
 
-searchInputFile = ROOT.TFile.Open(filename,"READ")
+
+##searchInputFile = ROOT.TFile.Open(filename,"READ")
 
 # Retrieve search phase inputs
 basicData = searchInputFile.Get("basicData")
@@ -135,8 +137,8 @@ firstBin = basicData.FindBin(fitRange[0])-1
 lastBin = basicData.FindBin(fitRange[1])+2
 print "New firstbin, lastbin",firstBin,lastBin
 
-firstBin = basicData.FindBin(1100)
-print "and another firstbin is",firstBin
+#firstBin = basicData.FindBin(1100)
+#print "and another firstbin is",firstBin
 
 # Convert plots into desired final form
 standardbins = basicData.GetXaxis().GetXbins()
@@ -163,11 +165,11 @@ for histnew,histold in [[newbasicdata,basicData],[newbasicBkgFrom4ParamFit,basic
     histnew.SetBinContent(bin,histold.GetBinContent(bin))
     histnew.SetBinError(bin,histold.GetBinError(bin))
  
-for histnew,histold in [[newAlternateBkg,alternateBkg],[newNomPlus1,nomPlus1],[newNomMinus1,nomMinus1],\
-        [newnomWithNewFuncErrSymm,nomWithNewFuncErrSymm],[newValueNewFuncErrDirected,valueNewFuncErrDirected]] :
-  for bin in range(histnew.GetNbinsX()+2) :
-    histnew.SetBinContent(bin,histold.GetBinContent(bin))
-    histnew.SetBinError(bin,histold.GetBinError(bin))
+#for histnew,histold in [[newAlternateBkg,alternateBkg],[newNomPlus1,nomPlus1],[newNomMinus1,nomMinus1],\
+#        [newnomWithNewFuncErrSymm,nomWithNewFuncErrSymm],[newValueNewFuncErrDirected,valueNewFuncErrDirected]] :
+#  for bin in range(histnew.GetNbinsX()+2) :
+#    histnew.SetBinContent(bin,histold.GetBinContent(bin))
+#    histnew.SetBinError(bin,histold.GetBinError(bin))
 
 print "Nominal:"
 newbasicBkgFrom4ParamFit.Print("all")
@@ -185,12 +187,33 @@ for bin in range(0,newresidualHist.GetNbinsX()+1):
 myPainter.drawBasicHistogram(ToddSignificancesHist,-1,-1,"Residuals","Entries","{0}/ToddSignificancesHist".format(folderextension))
 
 # Search phase plots
-myPainter.drawDataAndFitOverSignificanceHist(newbasicdata,newbasicBkgFrom4ParamFit,newresidualHist,\
-        'm_{jj} [TeV]','Events','Significance','{0}/figure1'.format(folderextension),\
-        luminosity,13,fitRange[0],fitRange[1],firstBin,lastBin+2,True,bumpLowEdge/1000.0,bumpHighEdge/1000.0,[],True,False,[],True,bumpHunterPVal)
+print "fitrange:",fitRange[0]," ", fitRange[1]
+myPainter.drawDataAndFitOverSignificanceHist(dataHist=newbasicdata
+        ,fitHist=newbasicBkgFrom4ParamFit,
+        significance=newresidualHist,\
+        x='m_{jj} [TeV]',
+        datay='Events',
+        sigy='Significance',
+        name='{0}/figure1'.format(folderextension),\
+        luminosity=luminosity,
+        CME=13,
+        FitMin=fitRange[0],
+        FitMax=fitRange[1],
+        firstBin=firstBin,
+        lastBin=lastBin+2,
+        doBumpLimits=True,
+        bumpLow=bumpLowEdge/1000.0,
+        bumpHigh=bumpHighEdge/1000.0,
+        extraLegendLines=[],
+        doLogX=True,
+        doRectangular=False,
+        setYRange=[],
+        writeOnpval=True,
+        pval=bumpHunterPVal)
 myPainter.drawDataAndFitOverSignificanceHist(newbasicdata,newbasicBkgFrom4ParamFit,newresidualHist,\
         'm_{jj} [TeV]','Prescale-weighted events','Significance','{0}/figure1_nobump'.format(folderextension),\
-        luminosity,13,fitRange[0],fitRange[1],firstBin,lastBin+2,False,bumpLowEdge,bumpHighEdge,[],True,False,[],True,bumpHunterPVal)
+        luminosity,13,fitRange[0],fitRange[1],firstBin,lastBin+2,False,bumpLowEdge,bumpHighEdge,[],True,False,[1,2E12],True,bumpHunterPVal)
+
 myPainter.drawPseudoExperimentsWithObservedStat(logLikelihoodPseudoStatHist,float(logLOfFitToData),logLPVal,0,luminosity,13,\
         'logL statistic','Pseudo-exeperiments',"{0}/logLStatPlot".format(folderextension))
 myPainter.drawPseudoExperimentsWithObservedStat(chi2PseudoStatHist,float(chi2OfFitToData),chi2PVal,0,luminosity,13,\
@@ -236,12 +259,13 @@ myPainter.drawDataWithFitAsHistogram(newbasicdata,newbasicBkgFrom4ParamFit,lumin
 # BROKEN myPainter.drawManyOverlaidHistograms([newbasicBkgFrom4ParamFit],["3 par"],"m_{jj} [TeV]","Events","CompareFitFunctions",firstBin,lastBin+2,0,1E6) 
 
 # Make a ratio histogram for Sasha's plot.
-altFitRatio = ROOT.TH1D("altFitRatio","altFitRatio",len(newbins)-1,array('d',newbins))
-for bin in range(0,altFitRatio.GetNbinsX()+1) :
-  if newbasicBkgFrom4ParamFit.GetBinContent(bin) == 0 :
-    altFitRatio.SetBinContent(bin,0)
-  else :
-    altFitRatio.SetBinContent(bin,(valueNewFuncErrDirected.GetBinContent(bin)-newbasicBkgFrom4ParamFit.GetBinContent(bin))/newbasicBkgFrom4ParamFit.GetBinContent(bin))
+if doAlternate:
+    altFitRatio = ROOT.TH1D("altFitRatio","altFitRatio",len(newbins)-1,array('d',newbins))
+    for bin in range(0,altFitRatio.GetNbinsX()+1) :
+      if newbasicBkgFrom4ParamFit.GetBinContent(bin) == 0 :
+        altFitRatio.SetBinContent(bin,0)
+      else :
+        altFitRatio.SetBinContent(bin,(valueNewFuncErrDirected.GetBinContent(bin)-newbasicBkgFrom4ParamFit.GetBinContent(bin))/newbasicBkgFrom4ParamFit.GetBinContent(bin))
 
 # Make a ratio histogram for paper plot.
 PlusNomRatio = ROOT.TH1D("PlusNomRatio","PlusNomRatio",len(newbins)-1,array('d',newbins))
@@ -257,11 +281,12 @@ for bin in range(0,MinusNomRatio.GetNbinsX()+1) :
   else :
     MinusNomRatio.SetBinContent(bin,(newNomMinus1.GetBinContent(bin)-newbasicBkgFrom4ParamFit.GetBinContent(bin))/newbasicBkgFrom4ParamFit.GetBinContent(bin))
 
-myPainter.drawDataWithFitAsHistogramAndResidual(newbasicdata,newbasicBkgFrom4ParamFit,luminosity,13,"m_{jj} [TeV]","Events",["Data","Fit","Statistical uncertainty on fit","Function choice"],"{0}/compareFitQualityAndFitChoice_Asymm_WithRatio".format(folderextension),True,[[newNomPlus1,newNomMinus1],[placeHolderNom,newValueNewFuncErrDirected]],[altFitRatio,MinusNomRatio,PlusNomRatio],firstBin,lastBin+2,True,True,True,False,False,True,False,True,bumpHunterPVal,True,fitRange[0],fitRange[1]) # changed from lastBin+2 to lastBin+18 to match FancyFigure
+if doAlternate:
+    myPainter.drawDataWithFitAsHistogramAndResidual(newbasicdata,newbasicBkgFrom4ParamFit,luminosity,13,"m_{jj} [TeV]","Events",["Data","Fit","Statistical uncertainty on fit","Function choice"],"{0}/compareFitQualityAndFitChoice_Asymm_WithRatio".format(folderextension),True,[[newNomPlus1,newNomMinus1],[placeHolderNom,newValueNewFuncErrDirected]],[altFitRatio,MinusNomRatio,PlusNomRatio],firstBin,lastBin+2,True,True,True,False,False,True,False,True,bumpHunterPVal,True,fitRange[0],fitRange[1]) # changed from lastBin+2 to lastBin+18 to match FancyFigure
 
-myPainter.drawDataWithFitAsHistogramAndResidualPaper(newbasicdata,newbasicBkgFrom4ParamFit,luminosity,13,"m_{jj} [TeV]","Events",["Data","Fit","Statistical uncertainty on fit","Function choice"],"{0}/compareFitQualityAndFitChoice_Asymm_WithRatioPaper".format(folderextension),True,[[newNomPlus1,newNomMinus1],[placeHolderNom,newValueNewFuncErrDirected]],[altFitRatio,MinusNomRatio,PlusNomRatio],firstBin,lastBin+2,True,True,True,False,False) # changed from lastBin+2 to lastBin+18 to match FancyFigure
+    myPainter.drawDataWithFitAsHistogramAndResidualPaper(newbasicdata,newbasicBkgFrom4ParamFit,luminosity,13,"m_{jj} [TeV]","Events",["Data","Fit","Statistical uncertainty on fit","Function choice"],"{0}/compareFitQualityAndFitChoice_Asymm_WithRatioPaper".format(folderextension),True,[[newNomPlus1,newNomMinus1],[placeHolderNom,newValueNewFuncErrDirected]],[altFitRatio,MinusNomRatio,PlusNomRatio],firstBin,lastBin+2,True,True,True,False,False) # changed from lastBin+2 to lastBin+18 to match FancyFigure
 
-myPainter.drawMultipleFitsAndResiduals(newbasicdata,[newbasicBkgFrom4ParamFit,newValueNewFuncErrDirected],[altFitRatio],["Nominal fit","Func choice unc"],"m_{jj} [TeV]","Events",["(alt-nom)/nom"],"{0}/directedFuncChoiceVersusNominal_withRatio".format(folderextension),luminosity,13,firstBin,lastBin+2)
+    myPainter.drawMultipleFitsAndResiduals(newbasicdata,[newbasicBkgFrom4ParamFit,newValueNewFuncErrDirected],[altFitRatio],["Nominal fit","Func choice unc"],"m_{jj} [TeV]","Events",["(alt-nom)/nom"],"{0}/directedFuncChoiceVersusNominal_withRatio".format(folderextension),luminosity,13,firstBin,lastBin+2)
 
 if doStatSearch :
   TomographyPlotWithStats = searchInputFile.Get("TomographyPlotWithStats")

@@ -1492,6 +1492,7 @@ class Morisot(object) :
       windowlowYVal = significance.GetMinimum()#-0.2
       windowhighYVal = significance.GetMaximum()#+0.2
 
+      minYvalue = dataHist.GetMinimum()
       line5lims = [windowLow,minYvalue,windowLow,heightLowEdge]
       line6lims = [windowHigh,minYvalue,windowHigh,heightHighEdge]
       line7lims = [windowLow,lowYVal,windowLow,highYVal]
@@ -2365,6 +2366,7 @@ class Morisot(object) :
     line3 = self.line.Clone("line3"); line3lims = []
     line4 = self.line.Clone("line4"); line4lims = []
 
+    minYvalue = dataHist.GetMinimum()
     if doBumpLimits :
       heightLowEdge=0
       heightHighEdge=0

@@ -35,10 +35,15 @@ def MakeHistoFromStats(statistics) :
   return statPlot
 
 # Get input
-filename = "/cluster/warehouse/kpachal/TLA2016/StatisticalAnalysis/Bayesian/TestResults_dressRehearsal/noSignal_permitWindow/SearchResultNoSig_our3Par_seed1_noSig_from496_permitWindow.root"
+#filename = "/cluster/warehouse/kpachal/TLA2016/StatisticalAnalysis/Bayesian/TestResults_dressRehearsal/noSignal_permitWindow/SearchResultNoSig_our3Par_seed1_noSig_from496_permitWindow.root"
 
-folder = "TestAnomalousPoints"
-ext = "_our3Par_496"
+#folder = "TestAnomalousPoints"
+#ext = "_our3Par_496"
+
+filename = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21SwiftNew/r21StatisticalAnalysis/source/results/data2017/DijetISRMC/SearchResultData_caseA_window13_doSwift.root"
+
+folder = "Test"
+ext = ""
 
 doAlternate = False
 doStatSearch = False

@@ -1,39 +1,53 @@
 import sys
 import os
 import subprocess
+import re
 
 ## User controlled ##
 
 
-
 # 2015 data
-fitFile = "inputs/TLASearchAndLimitSetting/mjj_fullDataset_06.root"
-fitHistogram = "mjj"
-lowEstimate =440
-highEstimate = 1236
-highFit = 7500
-workTag = "runSWIFT2015"
+#fitFile = "inputs/TLASearchAndLimitSetting/mjj_fullDataset_06.root"
+#fitHistogram = "mjj"
+#lowEstimate =440
+#highEstimate = 1236
+#highFit = 7500
+#workTag = "runSWIFT2015"
+#
+## 2016 data J75
+#fitFile = "inputs/UnblindingTLA2016/NominalUnblinding/lookInsideTheBox.root"
+#fitFile = "inputs/approvalTLA2016/lookInsideTheBoxAllSRs.root"
+#fitHistogram = "Nominal/DSJ75yStar03_TriggerJets_J75_yStar03_mjj_2016binning_TLArange_data"
+##fitHistogram = "Nominal/DSJ75yStar06_TriggerJets_J75_yStar06_mjj_2016binning_TLArange_data"
+#lowEstimate = 400
+#highEstimate = 2079
+#workTag = "runSWIFT2016_J75yStar03"
+#configInName = "configurations/Step1_SearchPhase_Swift_J75.config"
+#windowSize = "13"
+#
+# Yvonne 2017 MC 
 
-# 2016 data J75
-fitFile = "inputs/UnblindingTLA2016/NominalUnblinding/lookInsideTheBox.root"
-fitFile = "inputs/approvalTLA2016/lookInsideTheBoxAllSRs.root"
-fitHistogram = "Nominal/DSJ75yStar03_TriggerJets_J75_yStar03_mjj_2016binning_TLArange_data"
+fitFile = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21Rebuild/input/MC.root"
+fitHistogram = "dijetgamma_g85_2j65/Zprime_mjj_var"
 #fitHistogram = "Nominal/DSJ75yStar06_TriggerJets_J75_yStar06_mjj_2016binning_TLArange_data"
-lowEstimate = 400
-highEstimate = 2079
-workTag = "runSWIFT2016_J75yStar03"
-configInName = "configurations/Step1_SearchPhase_Swift_J75.config"
+lowEstimate = 300
+highEstimate = 1500
+workTag ="DijetISRMC"
+folderextension="data2017"
+configInName = "configurations/Step1_SearchPhase_Swift_dijetISR.config"
 windowSize = "13"
+lumi=35.5
+Ecm=13000
 
 '''
-#2016 data J100
-fitFile = "inputs/UnblindingTLA2016/NominalUnblinding/lookInsideTheBox.root"
-fitHistogram = "Nominal/DSJ100yStar06_TriggerJets_J100_yStar06_mjj_2016binning_TLArange_data"
-lowEstimate = 530
-highEstimate = 2081
-workTag = "runSWIFT2016_J100"
-configInName = "configurations/Step1_SearchPhase_Swift_J100.config"
-windowSize = "9"
+##2016 data J100
+#fitFile = "inputs/UnblindingTLA2016/NominalUnblinding/lookInsideTheBox.root"
+#fitHistogram = "Nominal/DSJ100yStar06_TriggerJets_J100_yStar06_mjj_2016binning_TLArange_data"
+#lowEstimate = 530
+#highEstimate = 2081
+#workTag = "runSWIFT2016_J100"
+#configInName = "configurations/Step1_SearchPhase_Swift_J100.config"
+#windowSize = "9"
 '''
 
 scriptArchive = "submitConfigs/%s/"%workTag
@@ -52,9 +66,10 @@ saveOutput = True
 
 doAlternate = True
 
+
 ## Automatic ##
 # stdout_redirect = "1>> results/data2017/validateSWIFT/output_{4}"
-commandTemplate = "SearchPhase --config {0} --file {1} --histName {2} --noDE --outputfile {3}/SearchResultData_{4}.root \n".format("{0}",fitFile,fitHistogram,outDir,"{1}")
+commandTemplate = "SearchPhase --useScaled --config {0} --file {1} --histName {2} --noDE --outputfile {3}/SearchResultData_{4}.root \n".format("{0}",fitFile,fitHistogram,outDir,"{1}")
 if saveOutput :
   commandTemplate = commandTemplate.replace("2>/dev/null","")
 
@@ -86,7 +101,7 @@ def batchSubmit(command,stringForNaming) :
   print submitcommand
   subprocess.call(submitcommand, shell=True)
 
-for case in ["D"]: #["A","B","C","D"] :
+for case in ["A","B", "C", "D"]: #["A","B","C","D"] :
  for windowWidth in [windowSize]:#[7,10,13,17] :
 
    for doSwift in [True] : #True] :
@@ -107,7 +122,9 @@ for case in ["D"]: #["A","B","C","D"] :
         if "swift_minXAvailable"  in line :
           line = "swift_minXAvailable   {0}\n".format(lowEstimate)
         if "swift_maxXAvailable"  in line :
-          line = "swift_maxXAvailable   {0}\n".format(highFit)
+          #YEDIT
+          #line = "swift_maxXAvailable   {0}\n".format(highFit)
+          line = "swift_maxXAvailable   {0}\n".format(highEstimate)
 #        if "inputHistDir"  in line and fitHistogram == "mjj" :
 #          continue
      
@@ -162,3 +179,4 @@ for case in ["D"]: #["A","B","C","D"] :
     else :
       print "About to call",thisCommand
       subprocess.call(thisCommand,shell=True)
+
