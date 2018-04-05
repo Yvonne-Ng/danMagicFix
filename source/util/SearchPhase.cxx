@@ -203,21 +203,35 @@ int main (int argc,char **argv)
 		basicInputHisto = (TH1D*) infile->Get(dataMjjHistoName);
 	} else {
 		//basicInputHisto = (TH1D*) infile->GetDirectory(inputHistDir)->Get(dataMjjHistoName);
+        
         cout<<"grabing histogram: "<<inputHistDir+"/"+dataMjjHistoName;
-        if (infile->GetListOfKeys()->Contains(inputHistDir+"/"+dataMjjHistoName)){
-            cout<<"histogram exists"<<endl;
+        if (inputHistDir==""){
+            if (infile->GetListOfKeys()->Contains(dataMjjHistoName)){
+                cout<<"histogram exist"<<endl;
+            }
         }
+        else {
+            if (infile->GetListOfKeys()->Contains(inputHistDir+"/"+dataMjjHistoName)){
+                cout<<"histogram exists"<<endl;
+            }
         else{
             cout<<"hitogram does not exist"<<endl;
         }
-		basicInputHisto = (TH1D*) infile->Get(inputHistDir+"/"+dataMjjHistoName);
+        }
+    }
+        if (inputHistDir=""){
+            basicInputHisto = (TH1D*) infile->Get(dataMjjHistoName);
+        }
+        else{
+		    basicInputHisto = (TH1D*) infile->Get(inputHistDir+"/"+dataMjjHistoName);
 	}
 
 	// If this is a scaled histogram, the errors need to be correct
-	if( f_useScaled == true ){
+	if (f_useScaled == true ){
                 std::cout<<"Using Scaled MC"<<std::endl;
 		for( int iBin=1; iBin < basicInputHisto->GetNbinsX()+1; ++iBin){
 			basicInputHisto->SetBinError(iBin, sqrt(basicInputHisto->GetBinContent(iBin)) );
+            cout<<"iBin:"<<iBin<<"Error: "<<sqrt(basicInputHisto->GetBinContent(iBin)) <<endl;
 		}
 	}
 
@@ -232,10 +246,12 @@ int main (int argc,char **argv)
     bool doSwift = settings->GetValue("doSwift",false);
     
     // Many convergence fits or just 5 of them?
-    bool doExtraPreliminaryFits = settings->GetValue("doExtraPreliminaryFits",false);
+    bool doExtraPreliminaryFits = settings->GetValue("doExtraPreliminaryFits",true);
+    doExtraPreliminaryFits=true;
     
     // Many convergence fits or just 5 of them?
-    bool doExtraSwiftChecks = settings->GetValue("doExtraSwiftChecks",false);
+    bool doExtraSwiftChecks = settings->GetValue("doExtraSwiftChecks",true);
+    doExtraSwiftChecks=true;
     
 	// Range for data fit
 	double minX = settings->GetValue("minXForFit",-1.0);
@@ -506,7 +522,9 @@ int main (int argc,char **argv)
 	// Perform fit and retrieve background histogram
 	// MjjHistogram backgroundFromFunc = theFitter.FitAndGetBkgWithDataErr(*theMjjFitFunction,theHistogram,100);
 	// Lydia changed -- Kate has added a line after this step with full pseudoexperiments and thus accepts the change.
-	MjjHistogram backgroundFromFunc = theFitter.FitAndGetBkgWithNoErr(*theMjjFitFunction,theHistogram,minXForFit,maxXForFit);
+    cout<<"*theMjjfitFunction:"<< theMjjFitFunction<<endl;
+    cout<<"theHistogram: "<< &theHistogram<<endl;
+	MjjHistogram backgroundFromFunc = theFitter.FitAndGetBkgWithNoErr(*theMjjFitFunction,theHistogram,minXForFit,1500);
     
     
     // Collect cross check info from SWIFT
@@ -791,6 +809,7 @@ int main (int argc,char **argv)
 	// Added for checking deficits
 	MjjBumpHunter theDeficitHunter;
 	theDeficitHunter.SetMinBumpWidth(2);
+	theDeficitHunter.SetMaxBumpWidth(5);
 	theDeficitHunter.SetUseSidebands(false);
 	theDeficitHunter.AllowDeficit(true);
 	double deficitHunterStat = theDeficitHunter.DoTest(theHistogram,backgroundFromFunc,firstBinBH,lastBinBH);
@@ -912,6 +931,7 @@ int main (int argc,char **argv)
 	// Make bump hunter for doing version using uncertainties.
 	MjjBumpHunter simpleBumpHunter;
 	simpleBumpHunter.SetMinBumpWidth(2);
+	simpleBumpHunter.SetMaxBumpWidth(5);
 	simpleBumpHunter.SetUseSidebands(false);
     // Stat uncertainties only
 	if (doPValWithSysts) theStatsTests.push_back(&simpleBumpHunter);
@@ -1082,6 +1102,15 @@ int main (int argc,char **argv)
 	// set correct values to preserve stuff below
 	theMjjFitFunction->SetCurrentParameterValues(fittedParameters);
 
+
+//	if( f_useScaled == true ){
+//                std::cout<<"Using Scaled MC"<<std::endl;
+//		for( int iBin=1; iBin < basicInputHisto->GetNbinsX()+1; ++iBin){
+//			theHistogram.GetHistogram.SetBinError(iBin, sqrt(basicInputHisto->GetBinContent(iBin)) );
+//            cout<<"iBin:"<<iBin<<"Error: "<<sqrt(basicInputHisto->GetBinContent(iBin)) <<endl;
+//		}
+//	}
+//
 	TH1D basicData = theHistogram.GetHistogram();
 //Y Edit
     cout<<"yEdit: "<<&basicData<<endl;

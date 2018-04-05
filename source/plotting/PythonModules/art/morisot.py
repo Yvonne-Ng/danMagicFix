@@ -2727,27 +2727,27 @@ class Morisot(object) :
         graph.GetXaxis().SetNoExponent(ROOT.kTRUE)
 
     # Set up display for signal
-    for signal in signals :
-      thiscolour = self.colourpalette.signalLineColours[signals.index(signal)]
-      thiserrorcolour = self.colourpalette.signalErrorColours[signals.index(signal)]
-      signal.SetMarkerColor(4)
-      signal.SetMarkerSize(1)
-      signal.SetMarkerStyle(24)
-      signal.SetLineColor(thiscolour)
-      signal.SetLineWidth(lineWidth)
-      signal.GetXaxis().SetTitleOffset(1.3)
-      if lineWidth > 2 :
-        signal.SetLineStyle(9 - signals.index(signal))
-      else :
-        signal.SetLineStyle(7 - signals.index(signal))
-      signal.SetFillColor(0) #thiserrorcolour)
-      signal.GetXaxis().SetTitle(nameX)
-      signal.GetXaxis().SetNdivisions(705,ROOT.kTRUE)
-      signal.GetYaxis().SetTitle(nameY)
-      signal.GetYaxis().SetRangeUser(minY,maxY)
-      signal.GetYaxis().SetLimits(minY,maxY)
-      if minX > 0.001 and minX < 1 :
-        signal.GetXaxis().SetNoExponent(ROOT.kTRUE)
+    #for signal in signals :
+    #  thiscolour = self.colourpalette.signalLineColours[signals.index(signal)]
+    #  thiserrorcolour = self.colourpalette.signalErrorColours[signals.index(signal)]
+    #  signal.SetMarkerColor(4)
+    #  signal.SetMarkerSize(1)
+    #  signal.SetMarkerStyle(24)
+    #  signal.SetLineColor(thiscolour)
+    #  signal.SetLineWidth(lineWidth)
+    #  signal.GetXaxis().SetTitleOffset(1.3)
+    #  if lineWidth > 2 :
+    #    signal.SetLineStyle(9 - signals.index(signal))
+    #  else :
+    #    signal.SetLineStyle(7 - signals.index(signal))
+    #  signal.SetFillColor(0) #thiserrorcolour)
+    #  signal.GetXaxis().SetTitle(nameX)
+    #  signal.GetXaxis().SetNdivisions(705,ROOT.kTRUE)
+    #  signal.GetYaxis().SetTitle(nameY)
+    #  signal.GetYaxis().SetRangeUser(minY,maxY)
+    #  signal.GetYaxis().SetLimits(minY,maxY)
+    #  if minX > 0.001 and minX < 1 :
+    #    signal.GetXaxis().SetNoExponent(ROOT.kTRUE)
 
     # Set up display for observations
     observed.SetMarkerColor(1)
@@ -2772,10 +2772,10 @@ class Morisot(object) :
     expected2sigma.Draw("AF") # 2-sigma expectation error bands
     expected1sigma.Draw("F") # 1-sigma expectation error bands
     expected.Draw("LX") # Center of expectation
-    for signal in signals :
-      signal.Draw("03") #L03
-    for signal in signals :
-      signal.Draw("LX") # was CX
+    #for signal in signals :
+    #  signal.Draw("03") #L03
+    #for signal in signals :
+    #  signal.Draw("LX") # was CX
     observed.Draw("PL") # Data points of measurement
 
     # Draw arrow to existing limit

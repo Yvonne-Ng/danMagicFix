@@ -8,7 +8,7 @@ from array import array
 from pprint import pprint
 from decimal import Decimal
 import SignalDictionaries
-import MorphedDictionaries
+#import MorphedDictionaries
 
 SignalTitles = {  "ZPrime0p05": "Z' (0.05)"
                 , "ZPrime0p10": "Z' (0.10)"
@@ -26,6 +26,10 @@ SignalCouplings ={"ZPrime0p05": "0.05"
                 , "ZPrime0p50": "0.50"
                 , "ZPrime0p60": "0.60"
                 }
+
+ptCutList=["50","100"]
+couplingList=["0p1","0p2", "0p3", "0p4"]
+masses=[300, 350,400, 450,500, 550,750, 950,1500]
 
 def rreplace(s, old, new, occurrence):
   li = s.rsplit(old, occurrence) 
@@ -50,9 +54,9 @@ def GetCenterAndSigmaDeviations(inputs) :
     statVals.append(inputs[int(wantEvents)])
   return statVals
 
-def getModelLimits(signal, these_massvals,individualLimitFiles, sig_dict, limitsDictOut, \
+def getModelLimits(ptCut, coupling, these_massvals,individualLimitFiles, sig_dict, limitsDictOut, \
   cutstring = '', xname = "M_{Z'} [GeV]", yname = "#sigma #times #it{A} #times BR [pb]" ):
-  print signal
+  print ptCut,"  ", coupling
 
   # Initialize painter
   myPainter = Morisot()
@@ -76,9 +80,16 @@ def getModelLimits(signal, these_massvals,individualLimitFiles, sig_dict, limits
   thisexpected_plus2  = ROOT.TGraph()
   thisexpected_minus2 = ROOT.TGraph()
   thistheory = ROOT.TGraph()
-  for mass in these_massvals:
+  #for mass in these_massvals:
+  for  mass in masses:
     import glob
-    file_list = glob.glob(individualLimitFiles.format(signal,mass))
+    #file_list = glob.glob(individualLimitFiles.format(signal,mass))
+    individualLimitFiles=individualLimitFiles.replace("PPP", ptCut)
+    individualLimitFiles=individualLimitFiles.replace("CCC", coupling)
+    individualLimitFiles=individualLimitFiles.replace("MMM", str(mass))
+    file_list = glob.glob(individualLimitFiles.format(ptCut,coupling, mass))
+    print "individualLimitFiles", individualLimitFiles
+    print("file_list: ", file_list)
     if len(file_list) == 0: continue
     allCLs = []
     PE_CLs = []
@@ -106,37 +117,41 @@ def getModelLimits(signal, these_massvals,individualLimitFiles, sig_dict, limits
     thisexpected_plus1.SetPoint( thisexpected_plus1.GetN(),m,expCLs[3])
     thisexpected_plus2.SetPoint( thisexpected_plus2.GetN(),m,expCLs[4])
 
-    c = SignalCouplings[signal]
+    #c = SignalCouplings[signal]
     #print sig_dict[c]
-    signal_info        = sig_dict[c]['%1.2f'%m]
-    signal_acc         = signal_info['acc']
-    signal_thxsec      = signal_info['theory']
-    signal_info['exp'] = expCLs[2]
-    signal_info['obs'] = obsCL
-    signal_info['exp+1'] = expCLs[3]    
-    signal_info['exp+2'] = expCLs[4] 
-    signal_info['exp-1'] = expCLs[1]  
-    signal_info['exp-2'] = expCLs[0] 
-    if c not in limitsDictOut: limitsDictOut[c] = {}
-    limitsDictOut[c]['%1.2f'%m] = signal_info
-    thistheory.SetPoint(thistheory.GetN(),m,signal_acc*signal_thxsec)
+    #signal_info        = sig_dict[c]['%1.2f'%m]
+    #signal_acc         = signal_info['acc']
+    #signal_thxsec      = signal_info['theory']
+    #signal_info['exp'] = expCLs[2]
+    #signal_info['obs'] = obsCL
+    #signal_info['exp+1'] = expCLs[3]    
+    #signal_info['exp+2'] = expCLs[4] 
+    #signal_info['exp-1'] = expCLs[1]  
+    #signal_info['exp-2'] = expCLs[0] 
+    #if c not in limitsDictOut: limitsDictOut[c] = {}
+    limitsDictOut = {}
+    #limitsDictOut['%1.2f'%m] = signal_info
+    #t#histheory.SetPoint(thistheory.GetN(),m,signal_acc*signal_thxsec)
     
     #if not c in ZPrimeLimits: ZPrimeLimits[c] = {}
     #ZPrimeLimits[c][m] = {'obs':obsCL,'exp':expCLs[2],'th':signal_acc*signal_thxsec}
 
   if thisobserved.GetN() == 0:
-    print "No limits found for %s"%signal
+    print "No limits found for couping: ",coupling, "ptCut: ",ptCut
     return limitsDictOut
 
   thisexpected1 = makeBand(thisexpected_minus1,thisexpected_plus1)
   thisexpected2 = makeBand(thisexpected_minus2,thisexpected_plus2)
-  outputName = folderextension+"Limits_"+signal+'_'+dataset+plotextension
+  outputName = folderextension+"Limits_pH"+ptCut+'_gSM'+coupling+"_"+dataset+plotextension
 
   xlow  = 'automatic'# (int(masses[signal][0]) - 100)/1000.
   xhigh = 'automatic'#(int(masses[signal][-1]) + 100)/1000.
 
-  myPainter.drawLimitSettingPlotObservedExpected(thisobserved,thisexpected,thisexpected1, thisexpected2, thistheory,SignalTitles[signal],\
-     outputName, xname,yname,luminosity,Ecm,xlow,xhigh,2E-4,100,False)
+
+  #myPainter.drawLimitSettingPlotObservedExpected(thisobserved,thisexpected,thisexpected1, thisexpected2, thistheory,SignalTitles[signal],\
+  #   outputName, xname,yname,luminosity,Ecm,xlow,xhigh,2E-4,100,False)
+  myPainter.drawLimitSettingPlotObservedExpected(thisobserved,thisexpected,thisexpected1, thisexpected2,"",\
+     "",outputName, xname,yname,luminosity,Ecm,xlow,xhigh,2E-4,100,False)
   return limitsDictOut
 
 def writeLimitsDict(folderextension, dataset,limitsDictOut):
@@ -200,12 +215,16 @@ if __name__ == "__main__":
   
   '''
   limitsDictOut = {}
-  (dataset, luminosity, cutstring, sig_dict) = ("J75yStar06", 3.57*1000, "J75 |y*| < 0.6",MorphedDictionaries.J7506_Dict)
-  individualLimitFiles = "results/data2017/runSWIFT2016_J75yStar06/Step2_setLimitsOneMassPoint_{0}_mZ{1}_*.root"
+  #(dataset, luminosity, cutstring, sig_dict) = ("J75yStar06", 3.57*1000, "J75 |y*| < 0.6")#,MorphedDictionaries.J7506_Dict)
+  (dataset, luminosity, cutstring) = ("J75yStar06", 3.57*1000, "J75 |y*| < 0.6")#,MorphedDictionaries.J7506_Dict)
+  #individualLimitFiles = "results/data2017/runSWIFT2016_J75yStar06/Step2_setLimitsOneMassPoint_{0}_mZ{1}_*.root"
+  individualLimitFiles = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21SwiftNew/r21StatisticalAnalysis/source/results/Step2_setLimitsOneMassPoint/test_dijet_g150_2j25/Step2_setLimitsOneMassPoint_JDMPhPPP_ZprimeCCCMMM_35p45fb_0_seedMMM.root"
 
   # Loop over signals in signalInputFileTypes
-  for signal in signalInputFileTypes :
-    limitsDictOut = getModelLimits(signal, masses_Zprime,individualLimitFiles, sig_dict, limitsDictOut, cutstring)
+#  for signal in signalInputFileTypes :
+  for ptCut in ptCutList:
+    for coupling in couplingList:
+        limitsDictOut = getModelLimits(ptCut, coupling, masses_Zprime,individualLimitFiles, {}, limitsDictOut, cutstring)
 
   writeLimitsDict(folderextension, dataset,limitsDictOut)
 

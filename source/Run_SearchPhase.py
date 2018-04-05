@@ -57,6 +57,8 @@ for doSwift in [True] : #False,True] :
       nameExt = "_Swift"
 
     configInName = "configurations/Step1_SearchPhase{0}.config".format(nameExt)
+
+    configInName=temConfig="/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21SwiftNew/SensitivityStudies/source/scripts/submitConfigs/sensitivity_mjj_Gauss_sig_500_smoothinjectedToBkg_500_ww12/Step1_SearchPhase_case4Param_window12.config"
     configOutName = "submitConfigs/Step1_SearchPhase{0}.config".format(nameExt)
     configOut = open(configOutName,'w')
     with open(configInName) as configInData :
@@ -66,8 +68,10 @@ for doSwift in [True] : #False,True] :
 
     modcommand = "chmod 744 {0}".format(configOutName)
     subprocess.call(modcommand,shell=True)
- 
+
+    #temp config
     thisCommand = commandTemplate.format(configOutName,nameExt)
+    #thisCommand = commandTemplate.format(temConfig,nameExt)
 
     if useBatch :
       batchSubmit(thisCommand,nameExt)

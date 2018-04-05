@@ -25,17 +25,31 @@ import re
 #configInName = "configurations/Step1_SearchPhase_Swift_J75.config"
 #windowSize = "13"
 #
-# Yvonne 2017 MC 
+# Yvonne 2017 MC
 
-fitFile = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21Rebuild/input/MC.root"
-fitHistogram = "dijetgamma_g85_2j65/Zprime_mjj_var"
+#fitFile = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21Rebuild/input/feb2018/trijet_HLT_j380_inclusive.root"
+#fitFile = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21Rebuild/input/btagged/reweighted_hist-background_ABCD_trijet.root"
+fitFile = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21Rebuild/input/btagged/trijet_HLT_j380_nbtag2.root"
+fitFile= "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21SwiftNew/SensitivityStudies/source/scripts/../results2/signalplusbackground/signalplusbackground.Gauss_width3.0p1.ifb.mjj_Gauss_sig__smooth.4.par.0.seed.default.root "
+
+#fitFile = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21Rebuild/input/MC.root"
+#fitHistogram = "Zprime_mjj_var"
+#fitHistogram = "background_mjj_var"
+fitHistogram = "mjj_Gauss_sig_500_smoothinjectedToBkg"
+#fitHistogram = "dijetgamma_g85_2j65/Zprime_mjj_var"
 #fitHistogram = "Nominal/DSJ75yStar06_TriggerJets_J75_yStar06_mjj_2016binning_TLArange_data"
+lowFit=300
+highFit=1200
 lowEstimate = 300
-highEstimate = 1500
-workTag ="DijetISRMC"
+highEstimate = 3000
+#workTag ="DijetISRMC-TrijetinclusiveNoUseScaled"
+workTag ="DijetISRMC-Trijet2btaggedPreLimFit"
 folderextension="data2017"
-configInName = "configurations/Step1_SearchPhase_Swift_dijetISR.config"
-windowSize = "13"
+#configInName = "configurations/Step1_SearchPhase_Swift_dijetISR.config"
+#configInName = "configurations/Step1_SearchPhase_Swift_dijetISR.config"
+configInName = "/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21SwiftNew/SensitivityStudies/source/scripts/submitConfigs/sensitivity_mjj_Gauss_sig_500_smoothinjectedToBkg_500_ww12/Step1_SearchPhase_case4Param_window12.config"
+
+windowSize = "12"
 lumi=35.5
 Ecm=13000
 
@@ -53,7 +67,6 @@ Ecm=13000
 scriptArchive = "submitConfigs/%s/"%workTag
 outDir = "results/data2017/%s/"%workTag
 
-
 ### Common
 
 for directory in [outDir,scriptArchive]:
@@ -64,12 +77,15 @@ templatescript = "scripts/batchScript_template.sh"
 
 saveOutput = True
 
-doAlternate = True
+doAlternate = False
 
 
 ## Automatic ##
 # stdout_redirect = "1>> results/data2017/validateSWIFT/output_{4}"
-commandTemplate = "SearchPhase --useScaled --config {0} --file {1} --histName {2} --noDE --outputfile {3}/SearchResultData_{4}.root \n".format("{0}",fitFile,fitHistogram,outDir,"{1}")
+
+#no useScaled
+commandTemplate = "SearchPhase --config {0} --file {1} --histName {2} --noDE --saveEx --outputfile {3}/SearchResultData_{4}.root \n".format("{0}",fitFile,fitHistogram,outDir,"{1}")
+#commandTemplate = "SearchPhase --useScaled --config {0} --file {1} --histName {2} --noDE --outputfile {3}/SearchResultData_{4}.root \n".format("{0}",fitFile,fitHistogram,outDir,"{1}")
 if saveOutput :
   commandTemplate = commandTemplate.replace("2>/dev/null","")
 
@@ -101,7 +117,7 @@ def batchSubmit(command,stringForNaming) :
   print submitcommand
   subprocess.call(submitcommand, shell=True)
 
-for case in ["A","B", "C", "D"]: #["A","B","C","D"] :
+for case in ["D"]: #["A","B","C","D"] :
  for windowWidth in [windowSize]:#[7,10,13,17] :
 
    for doSwift in [True] : #True] :
@@ -112,13 +128,13 @@ for case in ["A","B", "C", "D"]: #["A","B","C","D"] :
       for line in configInData :
         if "doSwift" in line:
           if (doSwift) :
-            line = "doSwift true\n" 
+            line = "doSwift true\n"
           else :
             line = "doSwift false\n"
         if "minXForFit" in line :
-          line = "minXForFit   {0}\n".format(lowEstimate)
+          line = "minXForFit   {0}\n".format(lowFit)
         if "maxXForFit" in line :
-          line = "maxXForFit   {0}\n".format(highEstimate)
+          line = "maxXForFit   {0}\n".format(highFit)
         if "swift_minXAvailable"  in line :
           line = "swift_minXAvailable   {0}\n".format(lowEstimate)
         if "swift_maxXAvailable"  in line :
@@ -127,10 +143,10 @@ for case in ["A","B", "C", "D"]: #["A","B","C","D"] :
           line = "swift_maxXAvailable   {0}\n".format(highEstimate)
 #        if "inputHistDir"  in line and fitHistogram == "mjj" :
 #          continue
-     
+
         if doAlternate and "doAlternateFunction" in line :
           line = "doAlternateFunction  true\n"
- 
+
         if "swift_nBinsLeft" in line :
           line = "swift_nBinsLeft  {0}\n".format(windowWidth)
         elif "swift_nBinsRight" in line :
@@ -178,5 +194,6 @@ for case in ["A","B", "C", "D"]: #["A","B","C","D"] :
       batchSubmit(thisCommand,extraString)
     else :
       print "About to call",thisCommand
+      print(thisCommand)
       subprocess.call(thisCommand,shell=True)
 

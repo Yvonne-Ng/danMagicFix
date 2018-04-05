@@ -694,6 +694,7 @@ bool MjjFitter::SwiftFit(MjjHistogram & mjjHistogram, MjjFitFunction & mjjFitFun
             for (int i=0; i<5; i++)  normalizedHistogramToFit.Fit(fFitFunction,"R0q","",lowPoint,highPoint);
             double * ROOTFitParams = fFitFunction->GetParameters();
             
+            fDoExtraPreliminaryFits=false;
             //do a few more preliminary ROOT fits to help convergence
             if (fDoExtraPreliminaryFits) {
                 
@@ -722,6 +723,8 @@ bool MjjFitter::SwiftFit(MjjHistogram & mjjHistogram, MjjFitFunction & mjjFitFun
                         for (int iLoop=0;iLoop<fFitFunction->GetNpar();iLoop++){
                             thisPrelimParamVals.push_back(fFitFunction->GetParameter(iLoop));
                         }
+                        cout<<"filling meaningful value"<<endl;
+                        cout<<"fFitfunction->GetParameter(0)"<<fFitFunction->GetParameter(0)<<endl;
                         allPrelimParamVals.push_back(thisPrelimParamVals);
                         //check whether this fit is best
                         double thisFitChi2 = prelimFitPtr->Chi2()/prelimFitPtr->Ndf();

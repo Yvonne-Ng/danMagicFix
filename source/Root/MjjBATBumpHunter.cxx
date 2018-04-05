@@ -1,6 +1,7 @@
 // ---------------------------------------------------------
 
 #include "Bayesian/MjjBATBumpHunter.h"
+using namespace std;
 
 // ---------------------------------------------------------
 MjjBATBumpHunter::MjjBATBumpHunter(MjjBATModel * fitter) :
@@ -96,6 +97,10 @@ double MjjBATBumpHunter::DoTest(MjjHistogram & dataHist, MjjHistogram & bkgHist,
     int nBins = thislastBin-thisfirstBin+1;
     int minWidth = std::max(fMinBinsInBump,1);
     int maxWidth = (int) std::min(fMaxBinsInBump,nBins/2);
+    cout<<"Yvonne"<<endl;
+    cout<<"fMaxBinsInBump: "<< fMaxBinsInBump<<endl;
+    cout<<"nBins/2: "<<nBins/2<<endl;
+    cout<<"maxWidth in doTest: "<<maxWidth<<endl;
 
     DoTestCore(h_data, h_bkg, minWidth,maxWidth,thisfirstBin,thislastBin);
 
@@ -271,6 +276,10 @@ void MjjBATBumpHunter::DoTestCore(TH1D h_data, TH1D h_bkg, int minWidth, int max
       fMostInterestingP = smallestPforWidth;
       fLowEdge = lowEdgeForWidth;
       fHighEdge = highEdgeForWidth;
+      cout<<"In DoTestCore: "<<endl;
+      cout<<"fLowEdge: "<<fLowEdge<<endl;
+      cout<<"fHighEdge: "<<fHighEdge<<endl;
+      cout<<"fMostInterestingP: "<<fMostInterestingP<<endl;
     }
   } // next width
 

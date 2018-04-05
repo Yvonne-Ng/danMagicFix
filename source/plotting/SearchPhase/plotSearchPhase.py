@@ -5,10 +5,11 @@ import ROOT
 from art.morisot import Morisot
 from array import array
 import sys,os
+import math
 
 def GetZVal (p, excess) :
   #the function normal_quantile converts a p-value into a significance,
-  #i.e. the number of standard deviations corresponding to the right-tail of 
+  #i.e. the number of standard deviations corresponding to the right-tail of
   #a Gaussian
   if excess :
     zval = ROOT.Math.normal_quantile(1-p,1);
@@ -37,7 +38,23 @@ def MakeHistoFromStats(statistics) :
 
 # Get input (the rootfile name should match that specified in the SearchPhase.config file)
 #searchInputFile = ROOT.TFile('./results/Step1_SearchPhase/Step1_SearchPhase.root')
-searchInputFile = ROOT.TFile('./results/data2017/DijetISRMC//SearchResultData_caseD_window13_doSwift.root')
+#searchInputFile = ROOT.TFile('./results/data2017/DijetISRMC//SearchResultData_caseB_window13_doSwift.root')
+#searchInputFile = ROOT.TFile('results/data2017/DijetISRMC//SearchResultData_caseD_window13_doSwift.root')
+#searchInputFile = ROOT.TFile('results/data2017/DijetISRMC//SearchResultData_caseD_window7_doSwift.root')
+#searchInputFile = ROOT.TFile('results/data2017/DijetISRMC/SearchResultData_caseD_window8_doSwift.root')
+#searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-Trijet//SearchResultData_caseD_window10_doSwift.root')
+#searchInputFile = ROOT.TFile('results/data2017/DijetISRMC//SearchResultData_caseD_window12_doSwift.root')
+#searchInputFile = ROOT.TFile('results/Step1_SearchPhase/swiftCodeGlobalFitMCRoot/Step1_SearchPhase_Zprime_mjj_var.root')
+#searchInputFile = ROOT.TFile('results/Step1_SearchPhase/swiftCodeGlobalFitMCRoot/Step1_SearchPhase_Zprime_mjj_var.root')
+#searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-Trijet2btaggedNoUseScaled//SearchResultData_caseD_window12_doSwift.root')
+#searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-Trijet2btaggedUseScaled//SearchResultData_caseD_window12_doSwift.root')
+#searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-TrijetinclusiveNoUseScaled//SearchResultData_caseD_window12_doSwift.root')
+#searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-Trijetinclusive1btaggedNoUseScaled//SearchResultData_caseD_window12_doSwift.root')
+#searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-TrijetinclusiveABCD//SearchResultData_caseD_window12_doSwift.root')
+searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-Trijet2btaggedPreLimFit//SearchResultData_caseD_window12_doSwift.root')
+
+
+
 folderextension = './plotting/SearchPhase/plots/'
 
 # make plots folder i.e. make folder extension
@@ -59,7 +76,7 @@ myPainter.setColourPalette("Teals")
 myPainter.setLabelType(0) # Sets label type i.e. Internal, Work in progress etc.
                           # See below for label explanation
 
-# 0 Just ATLAS    
+# 0 Just ATLAS
 # 1 "Preliminary"
 # 2 "Internal"
 # 3 "Simulation Preliminary"
@@ -163,8 +180,16 @@ for histnew,histold in [[newbasicdata,basicData],[newbasicBkgFrom4ParamFit,basic
         [newresidualHist,residualHist],[newrelativeDiffHist,relativeDiffHist],[newsigOfDiffHist,sigOfDiffHist]] :
   for bin in range(histnew.GetNbinsX()+2) :
     histnew.SetBinContent(bin,histold.GetBinContent(bin))
+    #if useScaled:
+    #    if histold.GetBinContent(bin)<=0.0:
+    #        error=0.0
+    #    else:
+    #        print(histold.GetBinContent(bin))
+    #        error=math.sqrt(histold.GetBinContent(bin))
+    #        histnew.SetBinError(bin,error)
+    #else:
     histnew.SetBinError(bin,histold.GetBinError(bin))
- 
+
 #for histnew,histold in [[newAlternateBkg,alternateBkg],[newNomPlus1,nomPlus1],[newNomMinus1,nomMinus1],\
 #        [newnomWithNewFuncErrSymm,nomWithNewFuncErrSymm],[newValueNewFuncErrDirected,valueNewFuncErrDirected]] :
 #  for bin in range(histnew.GetNbinsX()+2) :
@@ -256,7 +281,7 @@ myPainter.drawDataWithFitAsHistogram(newbasicdata,newbasicBkgFrom4ParamFit,lumin
 #  else :
 #    newfitfunctionratio.SetBinContent(bin,(newbasicBkgFrom4ParamFit.GetBinContent(bin)/newAlternateBkg.GetBinContent(bin)))
 #myPainter.drawBasicHistogram(newfitfunctionratio,firstBin,lastBin-5,"m_{jj} [TeV]","3 par/4par","{0}/compareDiffFitChoices".format(folderextension))
-# BROKEN myPainter.drawManyOverlaidHistograms([newbasicBkgFrom4ParamFit],["3 par"],"m_{jj} [TeV]","Events","CompareFitFunctions",firstBin,lastBin+2,0,1E6) 
+# BROKEN myPainter.drawManyOverlaidHistograms([newbasicBkgFrom4ParamFit],["3 par"],"m_{jj} [TeV]","Events","CompareFitFunctions",firstBin,lastBin+2,0,1E6)
 
 # Make a ratio histogram for Sasha's plot.
 if doAlternate:
