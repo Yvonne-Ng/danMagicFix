@@ -6,6 +6,14 @@ from art.morisot import Morisot
 from array import array
 import sys,os
 import math
+import argparse
+
+#adding arg parser
+parser=argparse.ArgumentParser()
+parser.add_argument("--inputFile", default="", help="input SP file to plot")
+parser.add_argument("--outputDir", default="", help="figure out where to store your output")
+args=parser.parse_args()
+ROOT.gROOT.SetBatch(True)
 
 def GetZVal (p, excess) :
   #the function normal_quantile converts a p-value into a significance,
@@ -30,6 +38,7 @@ def MakeHistoFromStats(statistics) :
   thismin = minVal-0.05*axisrange;
   thismax = maxVal+0.05*axisrange;
 
+  ROOT.gROOT.SetBatch(True)
   statPlot = ROOT.TH1D("statPlot","",nBins,thismin,thismax)
   for val in range(len(statistics)) :
     statPlot.Fill(statistics[val])
@@ -51,11 +60,17 @@ def MakeHistoFromStats(statistics) :
 #searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-TrijetinclusiveNoUseScaled//SearchResultData_caseD_window12_doSwift.root')
 #searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-Trijetinclusive1btaggedNoUseScaled//SearchResultData_caseD_window12_doSwift.root')
 #searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-TrijetinclusiveABCD//SearchResultData_caseD_window12_doSwift.root')
-searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-Trijet2btaggedPreLimFit//SearchResultData_caseD_window12_doSwift.root')
+#searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-Trijet2btaggedPreLimFit//SearchResultData_caseD_window12_doSwift.root')
 
+if not args.inputFile: # args is not specified (=""), this is the defautl inputFile (can be hardcoded)
+    searchInputFile = ROOT.TFile('results/data2017/DijetISRMC-Trijet2btagged2018APRWP//SearchResultData_caseD_window12_doSwift.root')
+else:
+    searchInputFile =ROOT.TFile(args.inputFile)
 
-
-folderextension = './plotting/SearchPhase/plots/'
+if not args.outputDir: #if outputFir is not specified in argparse
+    folderextension = './plotting/SearchPhase/plots/'
+else:
+    folderextension= './plotting/SearchPhase/plots/'+args.outputDir
 
 # make plots folder i.e. make folder extension
 if not os.path.exists(folderextension):
@@ -327,5 +342,6 @@ if doStatSearch :
   print "BumpHunter pvalue is",bumpPValStat
 
 searchInputFile.Close()
+print "currentDir : ", os.getcwd()
 
 print "Done."

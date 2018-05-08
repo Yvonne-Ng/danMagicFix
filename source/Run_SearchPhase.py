@@ -4,13 +4,18 @@ import subprocess
 
 ## User controlled ##
 
-fitFile = "/cluster/warehouse/kpachal/StatisticalAnalysis/samples/TLA2017_SWIFTValidation/outfile.root"
-fitHistogram = "J75yStar06_TriggerJets_J75_yStar06_mjj_2016binning_TLArange_data"
-inputHistDir = "Nominal/"
-outDir = "results/data2017/"
+#fitFile = "/cluster/warehouse/kpachal/StatisticalAnalysis/samples/TLA2017_SWIFTValidation/outfile.root"
+#fitHistogram = "J75yStar06_TriggerJets_J75_yStar06_mjj_2016binning_TLArange_data"
+
+fitFile="/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21Rebuild/input/2018-4B-taggedNewWorkingPoint/trijet_mjj_nbtag2.root"
+fitHistogram="background_mjj_var"
+inputHistDir = ""
+outDir = "results/data2017/2018-4B-taggedNewWorkingPoint-NoSWIFT-UseScaled"
+if not os.path.exists(outDir):
+    os.mkdir(outDir)
+configInName = "configurations/Step1_SearchPhase.config"
 
 scriptArchive = "submitConfigs/test/"
-
 useBatch = False
 templatescript = "scripts/batchScript_template.sh"
 
@@ -18,7 +23,7 @@ saveOutput = True
 
 ## Automatic ##
 
-commandTemplate = "SearchPhase --config {0} --file {1} --histName {2} --noDE --outputfile {3}/SearchResultData{4}.root 2>> /dev/null\n".format("{0}",fitFile,fitHistogram,outDir,"{1}")
+commandTemplate = "SearchPhase --useScaled --config {0} --file {1} --histName {2} --noDE --outputfile {3}/SearchResultData{4}.root 2>> /dev/null\n".format("{0}",fitFile,fitHistogram,outDir,"{1}")
 if saveOutput :
   commandTemplate = commandTemplate.replace("2>/dev/null","")
 
@@ -56,9 +61,9 @@ for doSwift in [True] : #False,True] :
     if doSwift :
       nameExt = "_Swift"
 
-    configInName = "configurations/Step1_SearchPhase{0}.config".format(nameExt)
+    #configInName = "configurations/Step1_SearchPhase{0}.config".format(nameExt)
 
-    configInName=temConfig="/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21SwiftNew/SensitivityStudies/source/scripts/submitConfigs/sensitivity_mjj_Gauss_sig_500_smoothinjectedToBkg_500_ww12/Step1_SearchPhase_case4Param_window12.config"
+    #configInName=temConfig="/lustre/SCRATCH/atlas/ywng/WorkSpace/r21/r21SwiftNew/SensitivityStudies/source/scripts/submitConfigs/sensitivity_mjj_Gauss_sig_500_smoothinjectedToBkg_500_ww12/Step1_SearchPhase_case4Param_window12.config"
     configOutName = "submitConfigs/Step1_SearchPhase{0}.config".format(nameExt)
     configOut = open(configOutName,'w')
     with open(configInName) as configInData :
